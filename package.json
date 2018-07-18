@@ -4,7 +4,8 @@
   "description": "movie-keeper-api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "mocha --exit"
   },
   "author": "Hung Nguyen",
   "license": "ISC",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "mocha": "^5.2.0",
     "supertest": "^3.1.0"
   }
