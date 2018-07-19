@@ -64,6 +64,18 @@ UserSchema.methods.serialize = function() {
   };
 };
 
+UserSchema.methods.showWatched = function() {
+	return {
+		watched: this.watched
+	}
+}
+
+UserSchema.methods.showWatchlist = function() {
+	return {
+		watchlist: this.watchlist
+	}
+}
+
 UserSchema.methods.validatePassword = function(password) {
 	return bcrypt.compare(password, this.password);
 };
