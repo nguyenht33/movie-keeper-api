@@ -16,10 +16,6 @@ app.use(
     cors({ origin: CLIENT_ORIGIN })
 );
 
-app.get('/api/*', (req, res) => {
-  res.json({ok: true});
-});
-
 let server;
 
 function runServer(DATABASE_URL, port = PORT) {
