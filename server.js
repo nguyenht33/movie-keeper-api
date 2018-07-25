@@ -9,12 +9,13 @@ const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config'),
       { router: watchedRouter } = require('./watched'),
       { router: watchlistRouter } = require('./watchlist');
 
-app.use('/api/users', usersRouter);
-app.use('/api/watched', watchedRouter);
-app.use('/api/watchlist', watchlistRouter);
 app.use(
     cors({ origin: CLIENT_ORIGIN })
 );
+
+app.use('/api/users', usersRouter);
+app.use('/api/watched', watchedRouter);
+app.use('/api/watchlist', watchlistRouter);
 
 let server;
 

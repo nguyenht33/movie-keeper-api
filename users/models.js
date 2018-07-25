@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs'),
 			Schema = mongoose.Schema;
       mongoose.Promise = global.Promise;
 
-const watchedSchema = Schema({
+const WatchedSchema = Schema({
   movieId: Number,
   title: String,
   year: Number,
@@ -14,7 +14,7 @@ const watchedSchema = Schema({
   _id: false
 });
 
-const watchlistSchema = Schema({
+const WatchlistSchema = Schema({
   movieId: Number,
   title: String,
   year: Number,
@@ -50,8 +50,8 @@ const UserSchema = Schema({
 		minlength: 1,
 		trim: true
 	},
-  watched: [watchedSchema],
-  watchlist: [watchlistSchema]
+  watched: [WatchedSchema],
+  watchlist: [WatchlistSchema]
 });
 
 UserSchema.methods.serialize = function() {

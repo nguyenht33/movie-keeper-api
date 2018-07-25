@@ -6,6 +6,8 @@ const express = require('express'),
 
 // add movie to movies watchelist
 router.post('/:userId', jsonParser, (req, res) => {
+	console.log('adding movie')
+	console.log(req.body)
   let { movieId, title, year, poster_path, date } = req.body;
 
   User.findOne({ _id: req.params.userId })
@@ -34,8 +36,29 @@ router.get('/:userId', (req, res) => {
 		});
 });
 
+// find a movie in watchlist
+router.get('/:userId/:movieId', (req, res) => {
+	let status;
+	let movieId = parseFloat(req.params.movieId)
+	User.findOne({ '_id': req.params.userId })
+		.then(user => {
+			let found = user.watchlist.find(movie => movie.movieId === movieId);
+			if (found) {
+				status = true;
+			} else {
+				status = false;
+			}
+			return res.status(200).send({ watchlist: status });
+		})
+		.catch(err => {
+			console.error(err)
+			res.status(500).json({ message: 'Internal server error' });
+		});
+});
+
 // remove movie from movies watchlist
 router.delete('/:userId/:movieId', (req, res) => {
+	console.log('deleting movie')
 	User.findByIdAndUpdate(
 			{'_id': req.params.userId},
 			{'$pull': {'watchlist': { 'movieId': req.params.movieId }}

@@ -44,7 +44,7 @@ router.post('/', jsonParser, (req, res) => {
 			return res.status(201).send(user.serialize());
 		})
 		.catch(err => {
-			console.log(err);
+			console.error(err);
 			if(err.reason === 'ValidationError'){
 				return res.status(err.code).json(err);
 			}

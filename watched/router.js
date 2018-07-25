@@ -14,7 +14,7 @@ router.post('/:userId', jsonParser, (req, res) => {
       return user.save();
     })
     .then(user => {
-      return res.status(201).json({ message: `Added ${title} to list` });
+      return res.status(201).json({ message: `Added ${title} to movies you watched!` });
     })
     .catch(err => {
       console.error(err)
@@ -27,6 +27,26 @@ router.get('/:userId', (req, res) => {
 	User.findOne({ _id: req.params.userId })
 		.then(user => {
 			return res.status(200).send(user.showWatched());
+		})
+		.catch(err => {
+			console.error(err)
+			res.status(500).json({ message: 'Internal server error' });
+		});
+});
+
+// find a movie in watched
+router.get('/:userId/:movieId', (req, res) => {
+	let status;
+	let movieId = parseFloat(req.params.movieId)
+	User.findOne({ '_id': req.params.userId })
+		.then(user => {
+			let found = user.watched.find(movie => movie.movieId === movieId);
+			if (found) {
+				status = true;
+			} else {
+				status = false;
+			}
+			return res.status(200).send({ watched: status });
 		})
 		.catch(err => {
 			console.error(err)
