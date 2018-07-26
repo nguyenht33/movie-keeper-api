@@ -30,7 +30,7 @@ const UserSchema = Schema({
 		minlength: 1,
 		trim: true
 	},
-  movie: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
+  movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
   watchlist: [{ type: Schema.Types.ObjectId, ref: 'Watchlist' }]
 });
 
