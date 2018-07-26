@@ -3,26 +3,6 @@ const bcrypt = require('bcryptjs'),
 			Schema = mongoose.Schema;
       mongoose.Promise = global.Promise;
 
-const WatchedSchema = Schema({
-  movieId: Number,
-  title: String,
-  year: Number,
-  poster_path: String,
-  rating: Number,
-  review: String,
-  date: Date,
-  _id: false
-});
-
-const WatchlistSchema = Schema({
-  movieId: Number,
-  title: String,
-  year: Number,
-  poster_path: String,
-  date: Date,
-  _id: false
-});
-
 const UserSchema = Schema({
   username: {
     type: String,
@@ -50,8 +30,8 @@ const UserSchema = Schema({
 		minlength: 1,
 		trim: true
 	},
-  watched: [WatchedSchema],
-  watchlist: [WatchlistSchema]
+  movie: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
+  watchlist: [{ type: Schema.Types.ObjectId, ref: 'Watchlist' }]
 });
 
 UserSchema.methods.serialize = function() {
@@ -63,18 +43,6 @@ UserSchema.methods.serialize = function() {
     lastname: this.lastname || '',
   };
 };
-
-UserSchema.methods.showWatched = function() {
-	return {
-		watched: this.watched
-	}
-}
-
-UserSchema.methods.showWatchlist = function() {
-	return {
-		watchlist: this.watchlist
-	}
-}
 
 UserSchema.methods.validatePassword = function(password) {
 	return bcrypt.compare(password, this.password);

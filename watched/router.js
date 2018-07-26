@@ -2,31 +2,37 @@ const express = require('express'),
 			router = express.Router(),
 			bodyParser = require('body-parser'),
 			jsonParser = bodyParser.json(),
+			{ Movie } = require('./models'),
 			{ User } = require('../users/models');
 
 // add movie to movies watched list
 router.post('/:userId', jsonParser, (req, res) => {
+	let user = req.params.userId
   let { movieId, title, year, poster_path, rating, review, date } = req.body;
+	let newMovie = new Movie({ movieId, title, year, poster_path, rating, review, date, user });
 
-  User.findOne({ _id: req.params.userId })
-    .then(user => {
-      user.watched.push({ movieId, title, year, poster_path, rating, review, date })
-      return user.save();
-    })
-    .then(user => {
-      return res.status(201).json({ message: `Added ${title} to movies you watched!` });
-    })
-    .catch(err => {
-      console.error(err)
-      res.status(500).json({ message: 'Internal server error' });
-    });
+	newMovie.save()
+		.then(() => {
+			return User.findOne({ _id: user })
+		})
+		.then(user => {
+			user.movie.push(newMovie);
+			return user.save();
+		})
+		.then(user => {
+			return res.status(201).json({ message: `Added ${title} to movies you watched!` });
+		})
+		.catch(err => {
+			console.error(err)
+			res.status(500).json({ message: 'Internal server error' });
+		});
 });
 
 // get all movies from watched list
 router.get('/:userId', (req, res) => {
-	User.findOne({ _id: req.params.userId })
-		.then(user => {
-			return res.status(200).send(user.showWatched());
+	Movie.findOne({ user: req.params.userId })
+		.then(movies => {
+			return res.status(200).send(movies);
 		})
 		.catch(err => {
 			console.error(err)
@@ -36,12 +42,13 @@ router.get('/:userId', (req, res) => {
 
 // find a movie in watched
 router.get('/:userId/:movieId', (req, res) => {
+	console.log('sdlkfj')
 	let status;
-	let movieId = parseFloat(req.params.movieId)
-	User.findOne({ '_id': req.params.userId })
-		.then(user => {
-			let found = user.watched.find(movie => movie.movieId === movieId);
-			if (found) {
+	let user = req.params.userId;
+	let movieId = parseFloat(req.params.movieId);
+	Movie.findOne({ user: user , movieId: movieId })
+		.then(movie => {
+			if (movie) {
 				status = true;
 			} else {
 				status = false;
@@ -58,15 +65,15 @@ router.get('/:userId/:movieId', (req, res) => {
 router.put('/:userId/:movieId', jsonParser, (req, res) => {
 	const { rating, review } = req.body;
 
-	User.findOneAndUpdate(
-		{ '_id': req.params.userId, 'watched.movieId': req.params.movieId },
+	Movie.findOneAndUpdate(
+		{ 'user': req.params.userId, 'movieId': req.params.movieId },
 		{ '$set': {
-								'watched.$.review': review,
-								'watched.$.rating': rating
+								'review': review,
+								'rating': rating
 							 }
 		})
-		.then(user => {
-			return res.status(204).json({ message: 'movie updated' });
+		.then(movie => {
+			return res.status(204).end();
 		})
 		.catch(err => {
 			console.error(err)
@@ -75,14 +82,15 @@ router.put('/:userId/:movieId', jsonParser, (req, res) => {
 });
 
 // remove movie from movies watched list
-router.delete('/:userId/:movieId', (req, res) => {
-	User.findByIdAndUpdate(
-			{'_id': req.params.userId},
-			{'$pull': {'watched': { 'movieId': req.params.movieId }}
-		})
+router.delete('/:userId/:moviedbId', (req, res) => {
+	Movie.findByIdAndRemove({ _id: req.params.movieDbId })
 		.then(() => {
-			res.status(204).end();
+			return User.findByIdAndUpdate(
+				{'_id': req.params.userId},
+				{'$pull': { 'movie': {'_id': req.params.moviedbId}}
+			})
 		})
+		.then(() => res.status(204).end())
 		.catch(err => {
 			console.error(err);
 			res.status(500).json({ message: 'Internal server error' });

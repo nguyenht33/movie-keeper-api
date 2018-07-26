@@ -2,12 +2,11 @@ const express = require('express'),
 			router = express.Router(),
 			bodyParser = require('body-parser'),
 			jsonParser = bodyParser.json(),
+			{ Watchlist } = require('./models'),
 			{ User } = require('../users/models');
 
 // add movie to movies watchelist
 router.post('/:userId', jsonParser, (req, res) => {
-	console.log('adding movie')
-	console.log(req.body)
   let { movieId, title, year, poster_path, date } = req.body;
 
   User.findOne({ _id: req.params.userId })
@@ -58,7 +57,6 @@ router.get('/:userId/:movieId', (req, res) => {
 
 // remove movie from movies watchlist
 router.delete('/:userId/:movieId', (req, res) => {
-	console.log('deleting movie')
 	User.findByIdAndUpdate(
 			{'_id': req.params.userId},
 			{'$pull': {'watchlist': { 'movieId': req.params.movieId }}
