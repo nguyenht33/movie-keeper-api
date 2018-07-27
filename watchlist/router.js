@@ -20,7 +20,11 @@ router.post('/:userId', jsonParser, (req, res) => {
 			return user.save();
 		})
 		.then(user => {
-			return res.status(201).json({ message: `Added ${title} to movies you watched!` });
+			return res.status(201).json({
+				message: `Added ${title} to movies you watched!`,
+				movieId: newMovie.id,
+				status: 201
+			});
 		})
 		.catch(err => {
 			console.error(err)
@@ -40,7 +44,7 @@ router.get('/:userId', (req, res) => {
 		});
 });
 
-// find a movie in watchlist
+// check if a movie is in watchlist
 router.get('/:userId/:movieId', (req, res) => {
 	let status;
 	let user = req.params.userId;
@@ -48,11 +52,13 @@ router.get('/:userId/:movieId', (req, res) => {
 	Watchlist.findOne({ user: user , movieId: movieId })
 		.then(movie => {
 			if (movie) {
+				id = movie._id;
 				status = true;
 			} else {
+				id = null;
 				status = false;
 			}
-			return res.status(200).send({ watched: status });
+			return res.status(200).send({ watched: status , id});
 		})
 		.catch(err => {
 			console.error(err)
