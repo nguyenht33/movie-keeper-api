@@ -32,11 +32,24 @@ router.post('/:userId', jsonParser, (req, res) => {
 		});
 });
 
-// get all movies from watched list
-router.get('/:userId', (req, res) => {
-	Movie.findOne({ user: req.params.userId })
-		.then(movies => {
-			return res.status(200).send(movies);
+router.get('/:userId/:page', (req, res) => {
+	const perPage = 15;
+	const page = req.params.page || 1
+	let movies;
+
+	Movie.find({ user: req.params.userId })
+		.skip((perPage * page) - perPage)
+		.limit(perPage)
+		.then(_movies => {
+			movies = _movies
+			return Movie.count();
+		})
+		.then(count => {
+			return res.status(200).json({
+				pages: Math.ceil(count / perPage),
+				current: page,
+				movies: movies
+			});
 		})
 		.catch(err => {
 			console.error(err)
@@ -44,8 +57,22 @@ router.get('/:userId', (req, res) => {
 		});
 });
 
+
+// get all movies from watched list
+// router.get('/:userId', (req, res) => {
+// 	Movie.find({ user: req.params.userId })
+// 		.then(movies => {
+// 			console.log(movies)
+// 			return res.status(200).send(movies);
+// 		})
+// 		.catch(err => {
+// 			console.error(err)
+// 			res.status(500).json({ message: 'Internal server error' });
+// 		});
+// });
+
 // check if a movie is in watched
-router.get('/:userId/:movieId', (req, res) => {
+router.get('/check/:userId/:movieId', (req, res) => {
 	let status,
 			id,
 			userId = req.params.userId,
