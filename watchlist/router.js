@@ -33,7 +33,6 @@ router.post('/:userId', jsonParser, (req, res) => {
 });
 
 router.get('/:userId/:page', (req, res) => {
-	console.log('getting')
 	const perPage = 15;
 	const page = req.params.page || 1
 	let movies;
@@ -41,6 +40,7 @@ router.get('/:userId/:page', (req, res) => {
 	Watchlist.find({ user: req.params.userId })
 		.skip((perPage * page) - perPage)
 		.limit(perPage)
+		.sort('-date')
 		.then(_movies => {
 			movies = _movies
 			return Watchlist.count();
@@ -84,7 +84,7 @@ router.get('/check/:userId/:movieId', (req, res) => {
 				id = null;
 				status = false;
 			}
-			return res.status(200).send({ watched: status , id});
+			return res.status(200).send({ watchlist: status , id});
 		})
 		.catch(err => {
 			console.error(err)
@@ -100,8 +100,8 @@ router.delete('/:userId/:movieObjId', (req, res) => {
 	Watchlist.findByIdAndRemove({ _id: movieObjId })
 		.then(() => {
 			return User.findByIdAndUpdate(
-				{ _id: userId },
-				{ $pull: { watchlist: movieObjId }}
+				{ '_id': userId },
+				{ '$pull': { 'watchlist': movieObjId }}
 			)
 		})
 		.then((user) => {

@@ -6,6 +6,7 @@ const express = require('express'),
 
 const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config'),
       { router: usersRouter } = require('./users'),
+      { router: authRouter } = require('./auth'),
       { router: watchedRouter } = require('./watched'),
       { router: watchlistRouter } = require('./watchlist');
 
@@ -14,6 +15,7 @@ app.use(
 );
 
 app.use('/api/users', usersRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/watched', watchedRouter);
 app.use('/api/watchlist', watchlistRouter);
 
