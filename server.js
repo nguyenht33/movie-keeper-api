@@ -1,18 +1,33 @@
+require('dotenv').config();
 const express = require('express'),
       app = express(),
       cors = require('cors'),
+      passport = require('passport'),
       mongoose = require('mongoose');
       mongoose.Promise = global.Promise;
 
 const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config'),
       { router: usersRouter } = require('./users'),
-      { router: authRouter } = require('./auth'),
+      { router: authRouter, localStrategy, jwtStrategy } = require('./auth'),
       { router: watchedRouter } = require('./watched'),
       { router: watchlistRouter } = require('./watchlist');
+
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 app.use(
     cors({ origin: CLIENT_ORIGIN })
 );
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);

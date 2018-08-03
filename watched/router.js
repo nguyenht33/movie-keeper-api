@@ -2,12 +2,15 @@ const express = require('express'),
 			router = express.Router(),
 			bodyParser = require('body-parser'),
 			jsonParser = bodyParser.json(),
+			passport = require('passport'),
+			jwtAuth = passport.authenticate('jwt', { session: false }),
 			{ Movie } = require('./models'),
 			{ User } = require('../users/models');
 
 // add movie to movies watched list
-router.post('/:userId', jsonParser, (req, res) => {
+router.post('/:userId', jwtAuth, jsonParser, (req, res) => {
 	let user = req.params.userId
+
   let { movieId, title, year, poster_path, rating, review, date } = req.body;
 	let newMovie = new Movie({ movieId, title, year, poster_path, rating, review, date, user });
 
@@ -34,7 +37,7 @@ router.post('/:userId', jsonParser, (req, res) => {
 		});
 });
 
-router.get('/:userId/:page', (req, res) => {
+router.get('/:userId/:page', jwtAuth, (req, res) => {
 	const perPage = 15;
 	const page = req.params.page || 1
 	let movies;
@@ -60,22 +63,8 @@ router.get('/:userId/:page', (req, res) => {
 		});
 });
 
-
-// get all movies from watched list
-// router.get('/:userId', (req, res) => {
-// 	Movie.find({ user: req.params.userId })
-// 		.then(movies => {
-// 			console.log(movies)
-// 			return res.status(200).send(movies);
-// 		})
-// 		.catch(err => {
-// 			console.error(err)
-// 			res.status(500).json({ message: 'Internal server error' });
-// 		});
-// });
-
 // check if a movie is in watched
-router.get('/check/:userId/:movieId', (req, res) => {
+router.get('/check/:userId/:movieId', jwtAuth, (req, res) => {
 	const	userId = req.params.userId,
 				movieId = req.params.movieId;
 	let status, id, rating, review;
@@ -100,7 +89,7 @@ router.get('/check/:userId/:movieId', (req, res) => {
 });
 
 // update an movie from watched list
-router.put('/:userId/:movieId', jsonParser, (req, res) => {
+router.put('/:userId/:movieId', jwtAuth, jsonParser, (req, res) => {
 	const { rating, review } = req.body;
 	Movie.findOneAndUpdate(
 		{ 'user': req.params.userId, '_id': req.params.movieId },
@@ -120,7 +109,7 @@ router.put('/:userId/:movieId', jsonParser, (req, res) => {
 
 
 // remove movie from movies watched list
-router.delete('/:userId/:movieObjId', (req, res) => {
+router.delete('/:userId/:movieObjId', jwtAuth, (req, res) => {
 	const userId = req.params.userId;
 	const movieObjId = req.params.movieObjId;
 

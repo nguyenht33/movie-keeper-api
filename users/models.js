@@ -31,7 +31,8 @@ const UserSchema = Schema({
 		trim: true
 	},
   movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
-  watchlist: [{ type: Schema.Types.ObjectId, ref: 'Watchlist' }]
+  watchlist: [{ type: Schema.Types.ObjectId, ref: 'Watchlist' }],
+  _id: { type: Schema.ObjectId, auto: true }
 });
 
 UserSchema.methods.serialize = function() {
