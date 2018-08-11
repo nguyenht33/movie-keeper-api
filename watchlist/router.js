@@ -34,8 +34,8 @@ router.post('/:userId', jwtAuth, jsonParser, (req, res) => {
 		});
 });
 
-router.get('/:userId/:page', jwtAuth, (req, res) => {
-	const perPage = 15;
+router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
+	const perPage = parseInt(req.params.perPage);
 	const page = req.params.page || 1
 	let movies;
 
@@ -45,7 +45,7 @@ router.get('/:userId/:page', jwtAuth, (req, res) => {
 		.sort('-date')
 		.then(_movies => {
 			movies = _movies
-			return Watchlist.count();
+			return Watchlist.countDocuments();
 		})
 		.then(count => {
 			return res.status(200).json({

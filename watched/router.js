@@ -37,9 +37,9 @@ router.post('/:userId', jwtAuth, jsonParser, (req, res) => {
 		});
 });
 
-router.get('/:userId/:page', jwtAuth, (req, res) => {
-	const perPage = 15;
-	const page = req.params.page || 1
+router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
+	const perPage = parseInt(req.params.perPage);
+	const page = req.params.page || 1;
 	let movies;
 
 	Movie.find({ user: req.params.userId })
@@ -48,7 +48,7 @@ router.get('/:userId/:page', jwtAuth, (req, res) => {
 		.sort('-date')
 		.then(_movies => {
 			movies = _movies
-			return Movie.count();
+			return Movie.countDocuments();
 		})
 		.then(count => {
 			return res.status(200).json({
@@ -97,7 +97,8 @@ router.put('/:userId/:movieId', jwtAuth, jsonParser, (req, res) => {
 								'review': review,
 								'rating': rating
 							 }
-		})
+		},
+		{ new: true })
 		.then(movie => {
 			return res.status(200).send({rating: movie.rating, review: movie.review});
 		})
