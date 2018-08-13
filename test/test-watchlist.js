@@ -7,20 +7,20 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 const { app } = require('../server');
-const { Movie } = require('../watched');
+const { Watchlist } = require('../watchlist');
 const { User } = require('../users');
 const	{ runServer, closeServer } = require('../server');
 const	{ TEST_DATABASE_URL } = require('../config');
-const { populateUser, populateWatched, populateUserWatched } = require('./seed/seed');
+const { populateUser, populateWatchlist, populateUserWatchlist } = require('./seed/seed');
 
-describe('Watched Intergration Test', () => {
+describe('Watchlist Intergration Test', () => {
 	before(function() {
 		return runServer(TEST_DATABASE_URL);
 	});
 
 	beforeEach(populateUser);
-	beforeEach(populateWatched);
-	beforeEach(populateUserWatched);
+	beforeEach(populateWatchlist);
+	beforeEach(populateUserWatchlist);
 
 	afterEach(function() {
 		mongoose.connection.collections['users'].drop( function(err) {
@@ -52,44 +52,41 @@ describe('Watched Intergration Test', () => {
 		});
 	}
 
-  describe('/api/watched', () => {
+  describe('/api/watchlist', () => {
     beforeEach(loginUser);
     const movieId = 281338;
 
-    it ('Should check if movie is in users watched', (done) => {
+    it ('Should check if movie is in users watchlist', (done) => {
       User.findOne()
         .then(user => {
           request(app)
-            .get(`/api/watched/check/${user.id}/${movieId}`)
+            .get(`/api/watchlist/check/${user.id}/${movieId}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(200)
             .end((err, res) => {
               if (err) {
                 return done(err);
               }
-              expect(res.body.watched).to.equal(true);
-              expect(res.body.rating).to.equal(4);
-              expect(res.body.id).to.exist;
+              expect(res.body.watchlist).to.equal(true)
+              expect(res.body.id).to.be.a.string;
               done();
             });
         });
     });
 
-    it ('Should add movie to movies watched', (done) => {
+    it ('Should add movie to movies watchlist', (done) => {
       const newMovie = {
         movieId: 8392,
         title: "My Neighbor Totoro",
         year: "1988",
         poster_path: "/2i0OOjvi7CqNQA6ZtYJtL65P9oZ.jpg",
-        rating: 4,
-        review: "Cute",
         date: "2018-07-12T03:41:14+00:00"
       }
 
       User.findOne()
         .then(user => {
           request(app)
-            .post(`/api/watched/${user.id}`)
+            .post(`/api/watchlist/${user.id}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .send(newMovie)
             .expect(201)
@@ -97,21 +94,21 @@ describe('Watched Intergration Test', () => {
               if (err) {
                 return done(err);
               }
-              expect(res.body.rating).to.equal(4);
+              expect(res.body.message).to.exist;
               expect(res.body.movieId).to.be.a.string;
               done();
             });
         });
     });
 
-    it ('Should get movies in watched list', (done) => {
+    it ('Should get movies in watchlist list', (done) => {
       const page = 1;
       const perPage = 20;
 
       User.findOne()
         .then(user => {
           request(app)
-            .get(`/api/watched/list/${user.id}/${page}/${perPage}`)
+            .get(`/api/watchlist/list/${user.id}/${page}/${perPage}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(200)
             .end((err, res) => {
@@ -126,44 +123,12 @@ describe('Watched Intergration Test', () => {
         });
     });
 
-    it ('Should update movie in watched list', (done) => {
-      const update = {
-        rating: '1',
-        review: 'Bad'
-      }
+    it ('Should delete movie from watchlist list', (done) => {
       User.findOne()
         .then(user => {
-          const movieDbId = user.movies[0];
+          const movieDbId = user.watchlist[0];
           request(app)
-            .put(`/api/watched/${user.id}/${movieDbId}`)
-            .set('Authorization', [`Bearer ${authToken}`])
-            .send(update)
-            .expect(200)
-            .end((err, res) => {
-              if (err) {
-                return done(err);
-              }
-
-              expect(res.body.rating).to.equal(1);
-              expect(res.body.review).to.equal('Bad');
-
-              Movie.findById(movieDbId)
-                .then(movie => {
-                  expect(movie.rating).to.equal(1);
-                  expect(movie.review).to.equal('Bad');
-                  done();
-                })
-                .catch(err => done(err));
-            });
-        });
-    });
-
-    it ('Should delete movie from watched list', (done) => {
-      User.findOne()
-        .then(user => {
-          const movieDbId = user.movies[0];
-          request(app)
-            .delete(`/api/watched/${user.id}/${movieDbId}`)
+            .delete(`/api/watchlist/${user.id}/${movieDbId}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(204)
             .end((err, res) => {
@@ -173,7 +138,7 @@ describe('Watched Intergration Test', () => {
 
               User.findById(user.id)
                 .then(user=> {
-                  expect(user.movies).to.be.empty;
+                  expect(user.watchlist).to.be.empty;
                   done();
                 })
                 .catch(err => done(err));
@@ -181,5 +146,4 @@ describe('Watched Intergration Test', () => {
         });
     });
   });
-
 });

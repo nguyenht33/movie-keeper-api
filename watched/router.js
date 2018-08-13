@@ -37,6 +37,7 @@ router.post('/:userId', jwtAuth, jsonParser, (req, res) => {
 		});
 });
 
+// get movies in watched list
 router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 	const perPage = parseInt(req.params.perPage);
 	const page = req.params.page || 1;
@@ -88,11 +89,11 @@ router.get('/check/:userId/:movieId', jwtAuth, (req, res) => {
 		});
 });
 
-// update an movie from watched list
-router.put('/:userId/:movieId', jwtAuth, jsonParser, (req, res) => {
+// update a movie in watched list
+router.put('/:userId/:movieDbId', jwtAuth, jsonParser, (req, res) => {
 	const { rating, review } = req.body;
 	Movie.findOneAndUpdate(
-		{ 'user': req.params.userId, '_id': req.params.movieId },
+		{ 'user': req.params.userId, '_id': req.params.movieDbId },
 		{ '$set': {
 								'review': review,
 								'rating': rating
@@ -110,15 +111,15 @@ router.put('/:userId/:movieId', jwtAuth, jsonParser, (req, res) => {
 
 
 // remove movie from movies watched list
-router.delete('/:userId/:movieObjId', jwtAuth, (req, res) => {
+router.delete('/:userId/:movieDbId', jwtAuth, (req, res) => {
 	const userId = req.params.userId;
-	const movieObjId = req.params.movieObjId;
+	const movieDbId = req.params.movieDbId;
 
-	Movie.findByIdAndRemove({ _id: movieObjId })
+	Movie.findByIdAndRemove({ _id: movieDbId })
 		.then(() => {
 			return User.findByIdAndUpdate(
 				{ '_id': userId },
-				{ '$pull': { 'movies': movieObjId }}
+				{ '$pull': { 'movies': movieDbId }}
 			)
 		})
 		.then((user) => {
