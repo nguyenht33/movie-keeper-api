@@ -11,6 +11,7 @@ const express = require('express'),
 router.post('/:userId', jwtAuth, jsonParser, (req, res) => {
 	let user = req.params.userId
   let { movieId, title, year, poster_path, date } = req.body;
+	console.log(req.body, req.params.userId);
 	let newMovie = new Watchlist({ movieId, title, year, poster_path, date, user });
 
 	newMovie.save()
