@@ -52,8 +52,9 @@ describe('Watchlist Intergration Test', () => {
 		});
 	}
 
+  beforeEach(loginUser);
+
   describe('/api/watchlist', () => {
-    beforeEach(loginUser);
     const movieId = 281338;
 
     it ('Should check if movie is in users watchlist', (done) => {

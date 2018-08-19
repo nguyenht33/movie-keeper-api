@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 const { Strategy: LocalStrategy } = require('passport-local'),
       { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt'),
       { User } = require('../users/models'),
