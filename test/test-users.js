@@ -24,52 +24,6 @@ describe('Users Testings', () => {
 	    return closeServer();
 	});
 
-	describe('Users Unit Tests', () => {
-		let jane;
-		beforeEach(() => {
-			jane = new User({
-				username: 'jane',
-				email: 'jane@doe.com',
-				password: 'password',
-				firstname: 'jane',
-				lastname: 'doe'
-			});
-		});
-
-		afterEach(function() {
-			mongoose.connection.collections['users'].drop( function(err) {
-			});
-		});
-
-		it ('Should create a new user', (done) => {
-			jane.save()
-				.then(user => {
-					assert(user._id);
-					done();
-				})
-				.catch(err => {
-					console.log(err);
-				});
-		});
-
-		it ('Should be able to get a user', (done) => {
-			jane.save()
-				.then(_jane => {
-					User.find({username: 'jane'})
-						.then(users => {
-							assert(users[0]._id.toString() === _jane._id.toString());
-							done();
-						})
-						.catch(err => {
-							return Promise.reject(err);
-						})
-				})
-				.catch(err => {
-					console.log(err);
-				});
-		});
-	});
-
 	describe('POST /api/users', () => {
 		afterEach(function() {
 			mongoose.connection.collections['users'].drop( function(err) {
@@ -113,7 +67,6 @@ describe('Users Testings', () => {
 			mongoose.connection.collections['users'].drop( function(err) {
 			});
 		});
-
 
 		describe('/api/auth/login', () => {
 			it('Should reject request with no credentials', (done) => {
