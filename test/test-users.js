@@ -25,14 +25,14 @@ describe('Users Testings', () => {
 	});
 
 	describe('Users Unit Tests', () => {
-		let joe;
+		let jane;
 		beforeEach(() => {
-			joe = new User({
-				username: 'joe',
-				email: 'joe@schmoe.com',
-				password: 'schmoe',
-				firstname: 'joe',
-				lastname: 'schmoe'
+			jane = new User({
+				username: 'jane',
+				email: 'jane@doe.com',
+				password: 'password',
+				firstname: 'jane',
+				lastname: 'doe'
 			});
 		});
 
@@ -42,7 +42,7 @@ describe('Users Testings', () => {
 		});
 
 		it ('Should create a new user', (done) => {
-			joe.save()
+			jane.save()
 				.then(user => {
 					assert(user._id);
 					done();
@@ -53,15 +53,15 @@ describe('Users Testings', () => {
 		});
 
 		it ('Should be able to get a user', (done) => {
-			joe.save()
-				.then(_joe => {
-					User.find({username: 'joe'})
+			jane.save()
+				.then(_jane => {
+					User.find({username: 'jane'})
 						.then(users => {
-							assert(users[0]._id.toString() === _joe._id.toString());
+							assert(users[0]._id.toString() === _jane._id.toString());
 							done();
 						})
 						.catch(err => {
-							return Promise.reject(err)
+							return Promise.reject(err);
 						})
 				})
 				.catch(err => {
@@ -114,6 +114,7 @@ describe('Users Testings', () => {
 			});
 		});
 
+
 		describe('/api/auth/login', () => {
 			it('Should reject request with no credentials', (done) => {
 				request(app)
@@ -137,30 +138,6 @@ describe('Users Testings', () => {
 					.send({ username: 'userjoe' , password: 'wrongPassword' })
 					.expect(401)
 					.end(done);
-			});
-
-			it('Should return a valid auth token', (done) => {
-				request(app)
-					.post('/api/auth/login')
-					.send({ username: 'userjoe', password: 'password' })
-					.expect(200)
-					.end((err, res) => {
-						if (err) {
-							return done(err);
-						}
-						const token = res.body.authToken;
-						const payload = jwt.verify(token, JWT_SECRET, {
-							algorithm: ['HS256']
-						});
-
-						User.findOne({username: 'userjoe'})
-							.then(user => {
-								expect(payload.user.id).to.equal(user._id.toString());
-								expect(payload.user.username).to.equal(user.username);
-								done();
-							})
-							.catch(err => done(err));
-					});
 			});
 		});
 

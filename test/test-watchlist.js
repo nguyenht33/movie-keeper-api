@@ -128,6 +128,7 @@ describe('Watchlist Intergration Test', () => {
       User.findOne()
         .then(user => {
           const movieDbId = user.watchlist[0];
+					console.log(movieDbId);
           request(app)
             .delete(`/api/watchlist/${user.id}/${movieDbId}`)
             .set('Authorization', [`Bearer ${authToken}`])
