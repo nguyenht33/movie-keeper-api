@@ -130,7 +130,7 @@ describe('Watchlist Intergration Test', () => {
       User.findOne()
         .then(user => {
 					console.log(user);
-          const movieDbId = user.watchlist[0];
+          const movieDbId = user.watchlists[0];
 					console.log(user.watchlist);
           request(app)
             .delete(`/api/watchlist/${user._id}/${movieDbId}`)
