@@ -52,9 +52,9 @@ describe('Watchlist Intergration Test', () => {
 		});
 	}
 
-  beforeEach(loginUser);
 
   describe('/api/watchlist', () => {
+		beforeEach(loginUser);
     const movieId = 281338;
 
     it ('Should check if movie is in users watchlist', (done) => {
@@ -127,6 +127,7 @@ describe('Watchlist Intergration Test', () => {
     it ('Should delete movie from watchlist list', (done) => {
       User.findOne()
         .then(user => {
+					console.log(user.id)
           const movieDbId = user.watchlist[0];
 					console.log(movieDbId);
           request(app)
