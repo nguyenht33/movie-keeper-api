@@ -61,7 +61,7 @@ describe('Watchlist Intergration Test', () => {
       User.findOne()
         .then(user => {
           request(app)
-            .get(`/api/watchlist/check/${user.id}/${movieId}`)
+            .get(`/api/watchlist/check/${user._id}/${movieId}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(200)
             .end((err, res) => {
@@ -87,7 +87,7 @@ describe('Watchlist Intergration Test', () => {
       User.findOne()
         .then(user => {
           request(app)
-            .post(`/api/watchlist/${user.id}`)
+            .post(`/api/watchlist/${user._id}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .send(newMovie)
             .expect(201)
@@ -109,7 +109,7 @@ describe('Watchlist Intergration Test', () => {
       User.findOne()
         .then(user => {
           request(app)
-            .get(`/api/watchlist/list/${user.id}/${page}/${perPage}`)
+            .get(`/api/watchlist/list/${user._id}/${page}/${perPage}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(200)
             .end((err, res) => {
@@ -127,11 +127,11 @@ describe('Watchlist Intergration Test', () => {
     it ('Should delete movie from watchlist list', (done) => {
       User.findOne()
         .then(user => {
-					console.log(user.id)
+					console.log(user._id)
           const movieDbId = user.watchlist[0];
 					console.log(movieDbId);
           request(app)
-            .delete(`/api/watchlist/${user.id}/${movieDbId}`)
+            .delete(`/api/watchlist/${user._id}/${movieDbId}`)
             .set('Authorization', [`Bearer ${authToken}`])
             .expect(204)
             .end((err, res) => {
@@ -139,7 +139,7 @@ describe('Watchlist Intergration Test', () => {
                 return done(err);
               }
 
-              User.findById(user.id)
+              User.findById(user._id)
                 .then(user=> {
                   expect(user.watchlist).to.be.empty;
                   done();
