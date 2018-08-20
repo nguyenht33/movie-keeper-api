@@ -129,6 +129,7 @@ describe('Watchlist Intergration Test', () => {
     it ('Should delete movie from watchlist list', (done) => {
       User.findOne()
         .then(user => {
+					console.log(user);
           const movieDbId = user.watchlist[0];
 					console.log(user.watchlist);
           request(app)
