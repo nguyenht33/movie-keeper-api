@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(
-    cors({ origin: CLIENT_ORIGIN })
+    cors({ origin: 'https://tranquil-bayou-96032.herokuapp.com' })
 );
 
 passport.use(localStrategy);
