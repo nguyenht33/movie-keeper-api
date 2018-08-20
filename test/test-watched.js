@@ -22,12 +22,14 @@ describe('Watched Intergration Test', () => {
 	beforeEach(populateWatched);
 	beforeEach(populateUserWatched);
 
-	afterEach(function() {
+	afterEach(function(done) {
 		mongoose.connection.collections['users'].drop( function(err) {
+			done();
 		});
 	});
-	afterEach(function() {
+	afterEach(function(done) {
   	mongoose.connection.collections['movies'].drop( function(err) {
+			done();
 		});
 	});
 	after(function() {

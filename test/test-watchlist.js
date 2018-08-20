@@ -22,12 +22,14 @@ describe('Watchlist Intergration Test', () => {
 	beforeEach(populateWatchlist);
 	beforeEach(populateUserWatchlist);
 
-	afterEach(function() {
+	afterEach(function(done) {
 		mongoose.connection.collections['users'].drop( function(err) {
+			done();
 		});
 	});
-	afterEach(function() {
-  	mongoose.connection.collections['movies'].drop( function(err) {
+	afterEach(function(done) {
+  	mongoose.connection.collections['watchlists'].drop( function(err) {
+			done();
 		});
 	});
 	after(function() {
