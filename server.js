@@ -12,6 +12,10 @@ const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config'),
       { router: watchedRouter } = require('./watched'),
       { router: watchlistRouter } = require('./watchlist');
 
+app.use(
+  cors({ origin: CLIENT_ORIGIN })
+);
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -21,10 +25,6 @@ app.use(function (req, res, next) {
   }
   next();
 });
-
-app.use(
-    cors({ origin: CLIENT_ORIGIN })
-);
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
