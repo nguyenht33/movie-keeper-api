@@ -46,9 +46,12 @@ router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 		.sort('-date')
 		.then(_movies => {
 			movies = _movies
-			count = _movies.length;
+			return Watchlist.find({ user: req.params.userId });
+		})
+		.then(__movies => {
+			count = __movies.length;
 			return res.status(200).json({
-				pages: Math.round(count / perPage),
+				pages: Math.ceil(count / perPage),
 				current: parseInt(page, 10),
 				movies: movies,
 				count: count
