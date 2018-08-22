@@ -38,6 +38,7 @@ router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 	const perPage = parseInt(req.params.perPage);
 	const page = req.params.page || 1
 	let movies;
+	let count;
 
 	Watchlist.find({ user: req.params.userId })
 		.skip((perPage * page) - perPage)
@@ -45,13 +46,12 @@ router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 		.sort('-date')
 		.then(_movies => {
 			movies = _movies
-			return Watchlist.countDocuments();
-		})
-		.then(count => {
+			count = _movies.length;
 			return res.status(200).json({
-				pages: Math.ceil(count / perPage),
-				current: page,
-				movies: movies
+				pages: Math.round(count / perPage),
+				current: parseInt(page, 10),
+				movies: movies,
+				count: count
 			});
 		})
 		.catch(err => {

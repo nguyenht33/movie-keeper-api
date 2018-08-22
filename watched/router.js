@@ -42,6 +42,7 @@ router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 	const perPage = parseInt(req.params.perPage);
 	const page = req.params.page || 1;
 	let movies;
+	let count;
 
 	Movie.find({ user: req.params.userId })
 		.skip((perPage * page) - perPage)
@@ -49,14 +50,18 @@ router.get('/list/:userId/:page/:perPage', jwtAuth, (req, res) => {
 		.sort('-date')
 		.then(_movies => {
 			movies = _movies
-			return Movie.countDocuments();
-		})
-		.then(count => {
-			return res.status(200).json({
-				pages: Math.ceil(count / perPage),
-				current: page,
-				movies: movies
-			});
+			count = _movies.length;
+
+			if (_movies.length) {
+				return res.status(200).json({
+					pages: Math.round(count / perPage),
+					current: parseInt(page, 10),
+					movies: movies,
+					status: !!count
+				});
+			} else {
+				return res.status(204).json({message: no-content});
+			}
 		})
 		.catch(err => {
 			console.error(err)
@@ -108,7 +113,6 @@ router.put('/:userId/:movieDbId', jwtAuth, jsonParser, (req, res) => {
 			res.status(500).json({ message: 'Internal server error' });
 		});
 });
-
 
 // remove movie from movies watched list
 router.delete('/:userId/:movieDbId', jwtAuth, (req, res) => {
